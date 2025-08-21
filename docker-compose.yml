@@ -1,0 +1,68 @@
+services:
+  frontend:
+    build: ./frontend
+    container_name: frontend
+    tty: true
+    ports:
+      - 3000:3000
+    stdin_open: true
+    # プロジェクトディレクトリにマウントする
+    volumes:
+      - ./frontend/src:/app/src
+    working_dir: /app/src
+    environment:
+      - WATCHPACK_POLLING=true
+    command: sh -c "npm i && npm run dev"
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: backend
+    ports:
+      - 1323:1323
+    tty: true
+    restart: always
+    volumes:
+      - ./backend/src:/go/src
+    working_dir: /go/src
+    command: air -c .air.toml
+
+  swagger-ui:
+    image: swaggerapi/swagger-ui:latest
+    container_name: swagger-ui
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./docs:/usr/share/nginx/html/docs:ro
+    environment:
+      # どちらかでOK（片方で十分）。いまのパスならこれで動く
+      - SWAGGER_JSON=/usr/share/nginx/html/docs/openapi.yaml
+    depends_on:
+      - backend
+    networks:
+      - app-network
+    restart: unless-stopped
+
+  db:
+    build:
+      context: ./db
+      dockerfile: Dockerfile
+    container_name: postgres
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: mydb
+    volumes:
+      - db-store:/var/lib/postgresql/data
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  db-store:
