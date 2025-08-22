@@ -1,19 +1,29 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"net/http"
 )
 
 func main() {
-	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		w.WriteHeader(http.StatusOK)
-		fmt.Fprint(w, "Hello, world!")
-	})
+	// ルーティング設定
+	setupRoutes()
 	
-	log.Println("Server starting on :1323")
-	if err := http.ListenAndServe(":1323", nil); err != nil {
+	// サーバー起動
+	port := ":1323"
+	log.Printf("Server starting on %s", port)
+	if err := http.ListenAndServe(port, nil); err != nil {
 		log.Fatal(err)
 	}
+}
+
+// setupRoutes ルーティングの設定
+func setupRoutes() {
+	// ルートエンドポイント
+	http.HandleFunc("/", EnableCORS(HomeHandler))
+	
+	// APIエンドポイント
+	http.HandleFunc("/api/test", EnableCORS(TestAPIHandler))
+	http.HandleFunc("/api/hello", EnableCORS(HelloAPIHandler))
+	http.HandleFunc("/api/categories", EnableCORS(CategoriesAPIHandler))
 }

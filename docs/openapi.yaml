@@ -1,0 +1,165 @@
+openapi: 3.0.3
+info:
+  title: Go API Service
+  description: Go製Web APIサービス（net/http使用）
+  version: 1.0.0
+  contact:
+    name: API Support
+    email: support@example.com
+
+servers:
+  - url: http://localhost:1323
+    description: ローカル開発環境
+
+paths:
+  /:
+    get:
+      summary: ヘルスチェック
+      description: APIサーバーの動作確認
+      tags:
+        - Health
+      responses:
+        '200':
+          description: 正常動作
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: "Hello, world!"
+
+  /api/test:
+    get:
+      summary: APIテスト
+      description: API動作確認用エンドポイント
+      tags:
+        - Test
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TestResponse'
+
+  /api/hello:
+    get:
+      summary: Hello API
+      description: パラメータに応じた挨拶メッセージを返す
+      tags:
+        - Basic
+      parameters:
+        - name: name
+          in: query
+          description: 名前（省略時はWorld）
+          required: false
+          schema:
+            type: string
+            default: World
+            example: John
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HelloResponse'
+
+  /api/categories:
+    get:
+      summary: カテゴリ一覧取得
+      description: すべてのカテゴリを取得
+      tags:
+        - Categories
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Category'
+
+components:
+  schemas:
+    TestResponse:
+      type: object
+      required:
+        - message
+        - status
+        - data
+      properties:
+        message:
+          type: string
+          example: "API is working!"
+        status:
+          type: string
+          example: "success"
+        data:
+          type: object
+          properties:
+            timestamp:
+              type: string
+              format: date
+              example: "2025-08-21"
+            version:
+              type: string
+              example: "1.0.0"
+
+    HelloResponse:
+      type: object
+      required:
+        - message
+      properties:
+        message:
+          type: string
+          example: "Hello World"
+
+    Category:
+      type: object
+      required:
+        - id
+        - name
+        - description
+        - created_at
+      properties:
+        id:
+          type: integer
+          example: 1
+        name:
+          type: string
+          example: "Technology"
+        description:
+          type: string
+          example: "Tech related topics"
+        created_at:
+          type: string
+          format: date-time
+          example: "2025-08-21T10:00:00Z"
+
+    ErrorResponse:
+      type: object
+      required:
+        - error
+        - message
+        - code
+      properties:
+        error:
+          type: string
+          example: "invalid_request"
+        message:
+          type: string
+          example: "The request was invalid"
+        code:
+          type: integer
+          example: 400
+
+tags:
+  - name: Health
+    description: ヘルスチェック関連
+  - name: Test
+    description: テスト用エンドポイント
+  - name: Basic
+    description: 基本的なAPI
+  - name: Categories
+    description: カテゴリ管理

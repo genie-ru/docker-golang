@@ -8,10 +8,14 @@ services:
     stdin_open: true
     # プロジェクトディレクトリにマウントする
     volumes:
-      - ./frontend/src:/app/src
-    working_dir: /app/src
+      - ./frontend/src:/app
+      - /app/node_modules
+      - /app/.next
+    working_dir: /app
     environment:
       - WATCHPACK_POLLING=true
+      - CHOKIDAR_USEPOLLING=true
+      - NODE_ENV=development
     command: sh -c "npm i && npm run dev"
 
   backend:
@@ -36,7 +40,7 @@ services:
     volumes:
       - ./docs:/usr/share/nginx/html/docs:ro
     environment:
-      # どちらかでOK（片方で十分）。いまのパスならこれで動く
+      # いまのパスならこれで動く
       - SWAGGER_JSON=/usr/share/nginx/html/docs/openapi.yaml
     depends_on:
       - backend
@@ -54,7 +58,7 @@ services:
     environment:
       POSTGRES_USER: user
       POSTGRES_PASSWORD: password
-      POSTGRES_DB: mydb
+      POSTGRES_DB: postgres
     volumes:
       - db-store:/var/lib/postgresql/data
     networks:

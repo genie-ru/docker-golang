@@ -1,9 +1,8 @@
 FROM postgres:17.6
 
-# Time ZoneAc
+# Time Zone
 ENV TZ Asia/Tokyo
 
-# Language
-ENV LANG ja_JP.UTF-8
-ENV LANGUAGE ja_JP:ja
-ENV LC_ALL ja_JP.UTF-8
+# Use default locale (C.UTF-8) which is available in the postgres image
+ENV LANG C.UTF-8
+ENV LC_ALL C.UTF-8
