@@ -3,7 +3,7 @@
  * JSON形式のデータを見やすく表示
  */
 
-import React from 'react';
+import { FC } from 'react';
 
 interface ApiResponseCardProps {
   /** カードのタイトル */
@@ -18,7 +18,7 @@ interface ApiResponseCardProps {
  * APIレスポンスをカード形式で表示
  * JSONデータを整形して表示する
  */
-export const ApiResponseCard: React.FC<ApiResponseCardProps> = ({
+export const ApiResponseCard: FC<ApiResponseCardProps> = ({
   title,
   data,
   variant = 'gray',
